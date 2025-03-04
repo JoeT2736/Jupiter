@@ -4,57 +4,58 @@ from scipy import optimize as opt
 import pandas as pd
 import astropy.stats as astats
 import scipy.stats
+import seaborn as sns
 
 # Read Data with NaN Handling
-JupXI = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='IoData', usecols = 'A', dtype=float).to_numpy().flatten()
-JupYI = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='IoData', usecols = 'B', dtype=float).to_numpy().flatten()
-IoX = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='IoData', usecols = 'C', dtype=float).to_numpy().flatten()
-IoY = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='IoData', usecols = 'D', dtype=float).to_numpy().flatten()
-thetaI = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='IoData', usecols = 'E', dtype=float).to_numpy().flatten()
-scaleI = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='IoData', usecols = 'F', dtype=float).to_numpy().flatten()
-flipI = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='IoData', usecols = 'G', dtype=bool).to_numpy().flatten()
-JupErrXI = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='IoData', usecols = 'H', dtype=float).to_numpy().flatten()
-JupErrYI = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='IoData', usecols = 'I', dtype=float).to_numpy().flatten()
-Time_minsI = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='IoData', usecols = 'N', dtype=float).to_numpy().flatten()
+JupXI = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='IoData', usecols = 'A', dtype=float).to_numpy().flatten()
+JupYI = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='IoData', usecols = 'B', dtype=float).to_numpy().flatten()
+IoX = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='IoData', usecols = 'C', dtype=float).to_numpy().flatten()
+IoY = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='IoData', usecols = 'D', dtype=float).to_numpy().flatten()
+thetaI = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='IoData', usecols = 'E', dtype=float).to_numpy().flatten()
+scaleI = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='IoData', usecols = 'F', dtype=float).to_numpy().flatten()
+flipI = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='IoData', usecols = 'G', dtype=bool).to_numpy().flatten()
+JupErrXI = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='IoData', usecols = 'H', dtype=float).to_numpy().flatten()
+JupErrYI = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='IoData', usecols = 'I', dtype=float).to_numpy().flatten()
+Time_minsI = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='IoData', usecols = 'N', dtype=float).to_numpy().flatten()
 
 
-JupXE = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='EuroData', usecols = 'A', dtype=float).to_numpy().flatten()
-JupYE = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='EuroData', usecols = 'B', dtype=float).to_numpy().flatten()
-EuroX = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='EuroData', usecols = 'C', dtype=float).to_numpy().flatten()
-EuroY = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='EuroData', usecols = 'D', dtype=float).to_numpy().flatten()
-thetaE = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='EuroData', usecols = 'E', dtype=float).to_numpy().flatten()
-scaleE = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='EuroData', usecols = 'F', dtype=float).to_numpy().flatten()
-flipE = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='EuroData', usecols = 'G', dtype=bool).to_numpy().flatten()
-JupErrXE = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='EuroData', usecols = 'H', dtype=float).to_numpy().flatten()
-JupErrYE = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='EuroData', usecols = 'I', dtype=float).to_numpy().flatten()
-Time_minsE = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='EuroData', usecols = 'N', dtype=float).to_numpy().flatten()
-
-
-
-JupXG = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='GanyData', usecols = 'A', dtype=float).to_numpy().flatten()
-JupYG = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='GanyData', usecols = 'B', dtype=float).to_numpy().flatten()
-GanyX = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='GanyData', usecols = 'C', dtype=float).to_numpy().flatten()
-GanyY = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='GanyData', usecols = 'D', dtype=float).to_numpy().flatten()
-thetaG = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='GanyData', usecols = 'E', dtype=float).to_numpy().flatten()
-scaleG = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='GanyData', usecols = 'F', dtype=float).to_numpy().flatten()
-flipG = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='GanyData', usecols = 'G', dtype=bool).to_numpy().flatten()
-JupErrXG = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='GanyData', usecols = 'H', dtype=float).to_numpy().flatten()
-JupErrYG = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='GanyData', usecols = 'I', dtype=float).to_numpy().flatten()
-Time_minsG = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='GanyData', usecols = 'N', dtype=float).to_numpy().flatten()
+JupXE = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='EuroData', usecols = 'A', dtype=float).to_numpy().flatten()
+JupYE = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='EuroData', usecols = 'B', dtype=float).to_numpy().flatten()
+EuroX = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='EuroData', usecols = 'C', dtype=float).to_numpy().flatten()
+EuroY = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='EuroData', usecols = 'D', dtype=float).to_numpy().flatten()
+thetaE = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='EuroData', usecols = 'E', dtype=float).to_numpy().flatten()
+scaleE = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='EuroData', usecols = 'F', dtype=float).to_numpy().flatten()
+flipE = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='EuroData', usecols = 'G', dtype=bool).to_numpy().flatten()
+JupErrXE = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='EuroData', usecols = 'H', dtype=float).to_numpy().flatten()
+JupErrYE = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='EuroData', usecols = 'I', dtype=float).to_numpy().flatten()
+Time_minsE = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='EuroData', usecols = 'N', dtype=float).to_numpy().flatten()
 
 
 
+JupXG = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='GanyData', usecols = 'A', dtype=float).to_numpy().flatten()
+JupYG = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='GanyData', usecols = 'B', dtype=float).to_numpy().flatten()
+GanyX = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='GanyData', usecols = 'C', dtype=float).to_numpy().flatten()
+GanyY = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='GanyData', usecols = 'D', dtype=float).to_numpy().flatten()
+thetaG = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='GanyData', usecols = 'E', dtype=float).to_numpy().flatten()
+scaleG = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='GanyData', usecols = 'F', dtype=float).to_numpy().flatten()
+flipG = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='GanyData', usecols = 'G', dtype=bool).to_numpy().flatten()
+JupErrXG = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='GanyData', usecols = 'H', dtype=float).to_numpy().flatten()
+JupErrYG = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='GanyData', usecols = 'I', dtype=float).to_numpy().flatten()
+Time_minsG = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='GanyData', usecols = 'N', dtype=float).to_numpy().flatten()
 
-JupXC = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='CalliData', usecols = 'A', dtype=float).to_numpy().flatten()
-JupYC = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='CalliData', usecols = 'B', dtype=float).to_numpy().flatten()
-CalliX = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='CalliData', usecols = 'C', dtype=float).to_numpy().flatten()
-CalliY = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='CalliData', usecols = 'D', dtype=float).to_numpy().flatten()
-thetaC = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='CalliData', usecols = 'E', dtype=float).to_numpy().flatten()
-scaleC = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='CalliData', usecols = 'F', dtype=float).to_numpy().flatten()
-flipC = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='CalliData', usecols = 'G', dtype=bool).to_numpy().flatten()
-JupErrXC = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='CalliData', usecols = 'H', dtype=float).to_numpy().flatten()
-JupErrYC = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='CalliData', usecols = 'I', dtype=float).to_numpy().flatten()
-Time_minsC = pd.read_excel(r'F:\Lab Reports\Jupiter Data 24 01 2025.xlsx', sheet_name='CalliData', usecols = 'N', dtype=float).to_numpy().flatten()
+
+
+
+JupXC = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='CalliData', usecols = 'A', dtype=float).to_numpy().flatten()
+JupYC = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='CalliData', usecols = 'B', dtype=float).to_numpy().flatten()
+CalliX = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='CalliData', usecols = 'C', dtype=float).to_numpy().flatten()
+CalliY = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='CalliData', usecols = 'D', dtype=float).to_numpy().flatten()
+thetaC = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='CalliData', usecols = 'E', dtype=float).to_numpy().flatten()
+scaleC = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='CalliData', usecols = 'F', dtype=float).to_numpy().flatten()
+flipC = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='CalliData', usecols = 'G', dtype=bool).to_numpy().flatten()
+JupErrXC = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='CalliData', usecols = 'H', dtype=float).to_numpy().flatten()
+JupErrYC = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='CalliData', usecols = 'I', dtype=float).to_numpy().flatten()
+Time_minsC = pd.read_excel(r'C:\Users\PHYUG.MDS\Downloads\Jupiter Data 24 01 2025(2).xlsx', sheet_name='CalliData', usecols = 'N', dtype=float).to_numpy().flatten()
 
 
 
@@ -62,6 +63,20 @@ Data_stackI = np.column_stack([JupXI, JupYI, IoX, IoY, Time_minsI])
 Data_stackE = np.column_stack([JupXE, JupYE, EuroX, EuroY, Time_minsE])
 Data_stackG = np.column_stack([JupXG, JupYG, GanyX, GanyY, Time_minsG])
 Data_stackC = np.column_stack([JupXC, JupYC, CalliX, CalliY, Time_minsC])
+
+'''
+#Scaled Jupiter centre error
+def JupErr(Xerr, Yerr, scale):
+    X, Y = [], []
+    for i in range(len(Xerr)):
+        Xe = X[i] * scale
+        Ye = Y[i] * scale
+        X.append(Xe)
+        Y.append(Ye)
+
+    return np.array(X), np.array(Y)
+'''
+
 
 
 
@@ -76,7 +91,25 @@ def rotate_coords(Jx, Jy, x, y, theta, scale, flip):
     r_prime = A @ r
     J_prime = A @ J
     return (r_prime - J_prime) * scale
-
+'''
+def rotate_coords_JupCentre(Jx, Jy, theta, scale, flip):
+    theta = theta * np.pi / 180
+    if flip:
+        theta += np.pi
+    A = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
+    J = np.vstack([Jx, Jy])
+    J_prime = A @ J
+    return J_prime * scale
+'''
+'''
+def Jupiter_centre(Jx, Jy, theta, scale, flip):
+    x_data, y_data = [], []
+    for i in range(len(Jx)):
+        x_prime, y_prime = rotate_coords(Jx[i], Jy[i], theta[i], scale[i], flip[i])
+        x_data.append(x_prime)
+        y_data.append(y_prime)
+    return np.array(x_data), np.array(y_data)
+'''
 # Data Processing Function
 def data(Jx, Jy, x, y, theta, scale, flip):
     x_data, y_data = [], []
@@ -87,13 +120,14 @@ def data(Jx, Jy, x, y, theta, scale, flip):
     return np.array(x_data), np.array(y_data)
 
 # Sinusoidal Model
-'''
+
+
 def sinusoid(t, A, T, c):
     return A*np.sin((t + c) * (2 * np.pi) / T)
 
 def model(x, *params):
     return sinusoid(x, params[0], params[1], params[2])
-'''
+
 
 
 
@@ -114,6 +148,13 @@ x_dataE, y_dataE = data(JupXE, JupYE, EuroX, EuroY, thetaE, scaleE, flipE)
 x_dataG, y_dataG = data(JupXG, JupYG, GanyX, GanyY, thetaG, scaleG, flipG)
 x_dataC , y_dataC = data(JupXC, JupYC, CalliX, CalliY, thetaC, scaleC, flipC)
 
+'''
+x_JCI, y_JCI = Jupiter_centre(JupXI, JupYI, thetaI, scaleI, flipI)
+x_JCE, y_JCE = Jupiter_centre(JupXE, JupYE, thetaE, scaleE, flipE)
+x_JCG, y_JCG = Jupiter_centre(JupXG, JupYG, thetaG, scaleG, flipG)
+x_JCC, y_JCC = Jupiter_centre(JupXC, JupYC, thetaC, scaleC, flipC)
+'''
+
 #print('Io data', x_dataI, y_dataI, '/n')
 #print('Euro data', x_dataE, y_dataE, '/n')
 #print('Ganymede data', x_dataG, y_dataG, '/n')
@@ -122,10 +163,11 @@ x_dataC , y_dataC = data(JupXC, JupYC, CalliX, CalliY, thetaC, scaleC, flipC)
 
 # Initial values
 
-#initial_valuesIx = [100, 1.4, 0]
-#initial_valuesEx = [180, 3.5, 0]
-#initial_valuesGx = [280, 7, 0]
-#initial_valuesCx = [500, 13, 0]
+#initial_valuesIx = [130, 1.769, 0]
+#initial_valuesEx = [200, 3.551, 0]
+#initial_valuesGx = [280, 7.154, 0]
+#initial_valuesCx = [500, 16.689, 0]
+
 
 initial_valuesIx = [1.769, 0]
 initial_valuesEx = [3.551, 0]
@@ -141,21 +183,25 @@ initial_valuesCx = [16.689, 0]
 
 
 x_dataI = x_dataI.flatten()
+y_dataI = y_dataI.flatten()
 Time_minsI = Time_minsI.flatten()
 
 x_dataE = x_dataE.flatten()
+y_dataE = y_dataE.flatten()
 Time_minsE = Time_minsE.flatten()
 
 x_dataG = x_dataG.flatten()
+y_dataG = y_dataG.flatten()
 Time_minsG = Time_minsG.flatten()
 
 x_dataC = x_dataC.flatten()
+y_dataC= y_dataC.flatten()
 Time_minsC = Time_minsC.flatten()
 
 
 
 def sinusoidI(t, T, c):
-    return (max(x_dataI)+5)*np.sin((t + c) * (2 * np.pi) / T)
+    return (max(abs(x_dataI))+5)*np.sin((t + c) * (2 * np.pi) / T)
 
 def modelI(x, *params):
     return sinusoidI(x, params[0], params[1])
@@ -163,7 +209,7 @@ def modelI(x, *params):
 
 
 def sinusoidE(t, T, c):
-    return (max(x_dataE)+5)*np.sin((t + c) * (2 * np.pi) / T)
+    return (max(abs(x_dataE))+5)*np.sin((t + c) * (2 * np.pi) / T)
 
 def modelE(x, *params):
     return sinusoidE(x, params[0], params[1])
@@ -171,7 +217,7 @@ def modelE(x, *params):
 
 
 def sinusoidG(t, T, c):
-    return (max(x_dataG)+5)*np.sin((t + c) * (2 * np.pi) / T)
+    return (max(abs(x_dataG))+5)*np.sin((t + c) * (2 * np.pi) / T)
 
 def modelG(x, *params):
     return sinusoidG(x, params[0], params[1])
@@ -179,7 +225,7 @@ def modelG(x, *params):
 
 
 def sinusoidC(t, T, c):
-    return (max(x_dataC)+20)*np.sin((t + c) * (2 * np.pi) / T)
+    return (max(abs(x_dataC))+20)*np.sin((t + c) * (2 * np.pi) / T)
 
 def modelC(x, *params):
     return sinusoidC(x, params[0], params[1])
@@ -198,10 +244,17 @@ def modelC(x, *params):
 
 
 # Perform Curve Fitting
+#with set amplitude in sinusoid function
 poptI, covI = CurveFit(modelI, x_dataI, initial_valuesIx, Time_minsI)
 poptE, covE = CurveFit(modelE, x_dataE, initial_valuesEx, Time_minsE)
 poptG, covG = CurveFit(modelG, x_dataG, initial_valuesGx, Time_minsG)
 poptC, covC = CurveFit(modelC, x_dataC, initial_valuesCx, Time_minsC)
+
+#amplitude in intial values
+#poptI, covI = CurveFit(model, x_dataI, initial_valuesIx, Time_minsI)
+#poptE, covE = CurveFit(model, x_dataE, initial_valuesEx, Time_minsE)
+#poptG, covG = CurveFit(model, x_dataG, initial_valuesGx, Time_minsG)
+#poptC, covC = CurveFit(model, x_dataC, initial_valuesCx, Time_minsC)
 
 print('Optimised parameters for Io = ', poptI, '\n')
 
@@ -228,30 +281,162 @@ degrees_of_freedom = len(x_dataG) - len(poptG)
 def smooth_time(t):
     return np.linspace(min(t), max(t), 100000)/(24*60)
 
-plt.figure(figsize=(6, 6))
-plt.plot(Time_minsI/(24 * 60), x_dataI, 'o', label='Data')
-plt.plot(smooth_time(Time_minsI), modelI(smooth_time(Time_minsI), *poptI), label='Fit')
-plt.title('Io')
-plt.legend()
+
+
+def residuals(position, model):
+    return -abs(position) + abs(model)
+
+print(modelI(Time_minsI, *poptI))
+print(x_dataI)
+print(residuals(x_dataI, modelI(Time_minsI, *poptI)))
+
+def normal_residuals(position, model):
+    return residuals(position, model)/max(residuals(position, model))
+
+
+from matplotlib import gridspec
 
 plt.figure(figsize=(6, 6))
-plt.plot(Time_minsE / (24 * 60), x_dataE, 'o', label='Data')
+gs = gridspec.GridSpec(2, 1, height_ratios=[3, 1], hspace=0)
+
+ax1 = plt.subplot(gs[0])
+ax1.errorbar(Time_minsI/(24*60), x_dataI, yerr=0.5, marker='o', label='Data', ls='none')
+ax1.plot(smooth_time(Time_minsI), modelI(smooth_time(Time_minsI), *poptI), label='Fit')
+plt.setp(ax1.get_xticklabels(), visible='False')
+#ax1.set_xlabel('Arcsec')
+ax1.set_ylabel('Arcsec')
+ax1.set_title('Io')
+ax1.legend()
+ax2 = plt.subplot(gs[1], sharex=ax1)
+ax2.axhline(y=0, color='black', linestyle='--')
+ax2.errorbar(Time_minsI/(24*60), normal_residuals(x_dataI, modelI(Time_minsI, *poptI)), marker='o', linestyle='None')
+ax2.set_xlabel('Time (days)')
+plt.show()
+
+
+
+plt.figure(figsize=(6, 6))
+plt.errorbar(Time_minsE / (24 * 60), x_dataE, yerr=0.5, marker='o', label='Data', ls='none')
 plt.plot(smooth_time(Time_minsE), modelE(smooth_time(Time_minsE), *poptE), label='Fit')
 plt.title('Europa')
+plt.xlabel('Time (days)')
+plt.ylabel('Arcsec')
 plt.legend()
 
 plt.figure(figsize=(6, 6))
-plt.plot(Time_minsG / (24 * 60), x_dataG, 'o', label='Data')
+plt.errorbar(Time_minsG / (24 * 60), x_dataG, yerr=0.5, marker='o', label='Data', ls='none')
 plt.plot(smooth_time(Time_minsG), modelG(smooth_time(Time_minsG), *poptG), label='Fit')
 plt.title('Ganymede')
+plt.xlabel('Time (days)')
+plt.ylabel('Arcsec')
 plt.legend()
 
 plt.figure(figsize=(6, 6))
-plt.plot(Time_minsC / (24 * 60), x_dataC, 'o', label='Data')
+plt.errorbar(Time_minsC / (24 * 60), x_dataC, yerr=0.5, marker='o', label='Data', ls='none')
 plt.plot(smooth_time(Time_minsC), modelC(smooth_time(Time_minsC), *poptC), label='Fit')
 plt.title('Callisto')
+plt.xlabel('Time (days)')
+plt.ylabel('Arcsec')
 plt.legend()
+
+
+#plt.show()
+
+
+
+
+
+
+
+plt.figure(figsize=(6, 6))
+plt.xlim(-175, 175)
+plt.ylim(-30, 30)
+plt.errorbar(x_dataI, y_dataI, xerr=0.5, yerr=0.5, marker='o', ls='none')
+plt.errorbar(0, 0, xerr=0.5, yerr=0.5, marker='o', color='red')
+plt.xlabel('Arcsec')
+plt.ylabel('Arcsec')
+plt.title('Io')
+
+plt.figure(figsize=(6, 6))
+plt.xlim(-250, 250)
+plt.ylim(-50, 50)
+plt.errorbar(x_dataE, y_dataE, xerr=0.5, yerr=0.5, marker='o', ls='none')
+plt.errorbar(0, 0, xerr=0.5, yerr=0.5, marker='o', color='red')
+plt.xlabel('Arcsec')
+plt.ylabel('Arcsec')
+plt.title('Europa')
+
+plt.figure(figsize=(6, 6))
+plt.xlim(-350, 350)
+plt.ylim(-60, 60)
+plt.errorbar(x_dataG, y_dataG, xerr=0.5, yerr=0.5, marker='o', ls='none')
+plt.errorbar(0, 0, xerr=0.5, yerr=0.5, marker='o', color='red')
+plt.xlabel('Arcsec')
+plt.ylabel('Arcsec')
+plt.title('Ganymede')
+
+plt.figure(figsize=(6, 6))
+plt.xlim(-500, 500)
+plt.ylim(-125, 125)
+plt.errorbar(x_dataC, y_dataC, xerr=0.5, yerr=0.5, marker='o', ls='none')
+plt.errorbar(0, 0, xerr=0.5, yerr=0.5, marker='o', color='red')
+plt.xlabel('Arcsec')
+plt.ylabel('Arcsec')
+plt.title('Callisto')
+
+
+
+####Plot of orbit of moons, radius is max values of amplitude from curvefit function (first value)
+
+thetas = np.linspace( 0 , 2 * np.pi , 150 )
+ 
+aI = poptI[0] * np.cos( thetas )
+bI = poptI[0] * np.sin( thetas )
+
+aE = poptE[0] * np.cos( thetas )
+bE = poptE[0] * np.sin( thetas )
+
+aG = poptG[0] * np.cos( thetas )
+bG = poptG[0] * np.sin( thetas )
+
+aC = poptC[0] * np.cos( thetas )
+bC = poptC[0] * np.sin( thetas )
+ 
+figure, axes = plt.subplots( 1 )
+ 
+axes.plot(aI, bI, label='Io' )
+axes.plot(aE, bE, label='Europa')
+axes.plot(aG, bG, label='Ganymede')
+axes.plot(aC, bC, label='Callisto')
+axes.plot(0,0, color='red')
+axes.set_aspect( 1 )
+plt.legend()
+
+#plt.show()
+
+
+
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ax.plot(aI, bI, np.zeros(len(thetas)),label='Io')
+ax.plot(aE, bE, np.zeros(len(thetas)),label='Europa')
+ax.plot(aG, bG, np.zeros(len(thetas)),label='Ganymede')
+ax.plot(aC, bC, np.zeros(len(thetas)),label='Callisto')
+ax.set_xlabel('(Arcsec)')
+ax.set_ylabel('(Arcsec)')
+#ax.plot(0, 0, 0, color='red')
+#ax.set_aspect(1)
+
+
 plt.show()
+
+
+
+
+
+
+
 
 
 
@@ -369,6 +554,12 @@ def Period(Position, initial_values):
 #print('Confidence Interval = ', conf_interval)
 
 ###########################
+
+
+
+
+
+
 
 
 
