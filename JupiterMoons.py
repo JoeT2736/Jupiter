@@ -91,6 +91,11 @@ def rotate_coords(Jx, Jy, x, y, theta, scale, flip):
     r_prime = A @ r
     J_prime = A @ J
     return (r_prime - J_prime) * scale
+
+#print(rotate_coords(JupXG, JupYG, GanyX, GanyY, thetaG, scaleG, flipG))
+
+
+
 '''
 def rotate_coords_JupCentre(Jx, Jy, theta, scale, flip):
     theta = theta * np.pi / 180
@@ -119,6 +124,8 @@ def data(Jx, Jy, x, y, theta, scale, flip):
         y_data.append(y_prime)
     return np.array(x_data), np.array(y_data)
 
+#print(data(JupXG, JupYG, GanyX, GanyY, thetaG, scaleG, flipG))
+
 # Sinusoidal Model
 
 
@@ -135,7 +142,7 @@ def model(x, *params):
 # Curve Fitting Function
 def CurveFit(model, x, initial_values, Time):
         popt, cov = opt.curve_fit(
-            model, Time/(24*60), x, sigma=np.ones(len(x))*0.5, 
+            model, x, Time/(24*60), sigma=np.ones(len(x))*0.5, 
             absolute_sigma=True, p0=initial_values, check_finite=True, maxfev=50000
         )
         return popt, cov
@@ -162,11 +169,6 @@ x_JCC, y_JCC = Jupiter_centre(JupXC, JupYC, thetaC, scaleC, flipC)
 
 
 # Initial values
-
-#initial_valuesIx = [130, 1.769, 0]
-#initial_valuesEx = [200, 3.551, 0]
-#initial_valuesGx = [280, 7.154, 0]
-#initial_valuesCx = [500, 16.689, 0]
 
 
 initial_valuesIx = [1.769, 0]
@@ -205,6 +207,12 @@ def sinusoidI(t, T, c):
 
 def modelI(x, *params):
     return sinusoidI(x, params[0], params[1])
+
+def sinusoidIy(t, T, c):
+    return (max(abs(y_dataI))+5)*np.sin((t + c) * (2 * np.pi) / T)
+
+def modelIy(x, *params):
+    return sinusoidIy(x, params[0], params[1])
 
 
 
@@ -245,24 +253,34 @@ def modelC(x, *params):
 
 # Perform Curve Fitting
 #with set amplitude in sinusoid function
-poptI, covI = CurveFit(modelI, x_dataI, initial_valuesIx, Time_minsI)
+poptIx, covIx = CurveFit(modelI, x_dataI, initial_valuesIx, Time_minsI)
+poptIy, covIy = CurveFit(modelIy, y_dataI, initial_valuesIx, Time_minsI)
+
 poptE, covE = CurveFit(modelE, x_dataE, initial_valuesEx, Time_minsE)
 poptG, covG = CurveFit(modelG, x_dataG, initial_valuesGx, Time_minsG)
 poptC, covC = CurveFit(modelC, x_dataC, initial_valuesCx, Time_minsC)
 
 #amplitude in intial values
-#poptI, covI = CurveFit(model, x_dataI, initial_valuesIx, Time_minsI)
-#poptE, covE = CurveFit(model, x_dataE, initial_valuesEx, Time_minsE)
-#poptG, covG = CurveFit(model, x_dataG, initial_valuesGx, Time_minsG)
-#poptC, covC = CurveFit(model, x_dataC, initial_valuesCx, Time_minsC)
+initial_valuesIx = [10, 3, 0]
+poptI2, covI2 = CurveFit(model, x_dataI, initial_valuesIx, Time_minsI)
+initial_valuesEx =[20, 5, 0]
+poptE2, covE2 = CurveFit(model, x_dataE, initial_valuesEx, Time_minsE)
+initial_valuesGx = [25, 7, 0]
+poptG2, covG2 = CurveFit(model, x_dataG, initial_valuesGx, Time_minsG)
+initial_valuesCx = [30, 13, 0]
+poptC2, covC2 = CurveFit(model, x_dataC, initial_valuesCx, Time_minsC)
 
-print('Optimised parameters for Io = ', poptI, '\n')
+print('Optimised parameters for Io = ', poptIx, '\n')
+print('Optimised parameters for Io = ', poptI2, '\n')
 
 print('Optimised parameters for Europa = ', poptE, '\n')
+print('Optimised parameters for Europa = ', poptE2, '\n')
 
 print('Optimised parameters for Ganymede = ', poptG, '\n')
+print('Optimised parameters for Ganymede = ', poptG2, '\n')
 
 print('Optimised parameters for Callisto = ', poptC, '\n')
+print('Optimised parameters for Callisto = ', poptC2, '\n')
 
 
 
@@ -286,9 +304,9 @@ def smooth_time(t):
 def residuals(position, model):
     return -abs(position) + abs(model)
 
-print(modelI(Time_minsI, *poptI))
-print(x_dataI)
-print(residuals(x_dataI, modelI(Time_minsI, *poptI)))
+#print(modelI(Time_minsI, *poptI))
+#print(x_dataI)
+#print(residuals(x_dataI, modelI(Time_minsI, *poptI)))
 
 def normal_residuals(position, model):
     return residuals(position, model)/max(residuals(position, model))
@@ -296,22 +314,32 @@ def normal_residuals(position, model):
 
 from matplotlib import gridspec
 
+
 plt.figure(figsize=(6, 6))
 gs = gridspec.GridSpec(2, 1, height_ratios=[3, 1], hspace=0)
 
 ax1 = plt.subplot(gs[0])
 ax1.errorbar(Time_minsI/(24*60), x_dataI, yerr=0.5, marker='o', label='Data', ls='none')
-ax1.plot(smooth_time(Time_minsI), modelI(smooth_time(Time_minsI), *poptI), label='Fit')
-plt.setp(ax1.get_xticklabels(), visible='False')
+ax1.plot(smooth_time(Time_minsI), modelI(smooth_time(Time_minsI), *poptIx), label='Fit')
+#plt.setp(ax1.get_xticklabels(), visible='False')
 #ax1.set_xlabel('Arcsec')
 ax1.set_ylabel('Arcsec')
-ax1.set_title('Io')
+ax1.set_title('Io x')
 ax1.legend()
-ax2 = plt.subplot(gs[1], sharex=ax1)
-ax2.axhline(y=0, color='black', linestyle='--')
-ax2.errorbar(Time_minsI/(24*60), normal_residuals(x_dataI, modelI(Time_minsI, *poptI)), marker='o', linestyle='None')
-ax2.set_xlabel('Time (days)')
-plt.show()
+#ax2 = plt.subplot(gs[1], sharex=ax1)
+#ax2.axhline(y=0, color='black', linestyle='--')
+#ax2.errorbar(Time_minsI/(24*60), normal_residuals(x_dataI, modelI(Time_minsI, *poptI)), marker='o', linestyle='None')
+#ax2.set_xlabel('Time (days)')
+#plt.show()
+
+
+plt.figure(figsize=([6, 6]))
+gs = gridspec.GridSpec(2, 1, height_ratios=[3, 1], hspace=0)
+ax1 = plt.subplot(gs[0])
+ax1.errorbar(Time_minsI/(24*60), y_dataI, yerr=0.5, marker='o', label='Data', ls='none')
+ax1.plot(smooth_time(Time_minsI), modelIy(smooth_time(Time_minsI), *poptIy), label='Fit')
+ax1.set_title('Io y')
+
 
 
 
@@ -347,7 +375,7 @@ plt.legend()
 
 
 
-
+'''
 plt.figure(figsize=(6, 6))
 plt.xlim(-175, 175)
 plt.ylim(-30, 30)
@@ -383,11 +411,11 @@ plt.errorbar(0, 0, xerr=0.5, yerr=0.5, marker='o', color='red')
 plt.xlabel('Arcsec')
 plt.ylabel('Arcsec')
 plt.title('Callisto')
-
+'''
 
 
 ####Plot of orbit of moons, radius is max values of amplitude from curvefit function (first value)
-
+'''
 thetas = np.linspace( 0 , 2 * np.pi , 150 )
  
 aI = poptI[0] * np.cos( thetas )
@@ -427,7 +455,7 @@ ax.set_xlabel('(Arcsec)')
 ax.set_ylabel('(Arcsec)')
 #ax.plot(0, 0, 0, color='red')
 #ax.set_aspect(1)
-
+'''
 
 plt.show()
 
@@ -488,31 +516,223 @@ print((conf_interval))
 
 
 
+def ellipse_fit(x,y):
+    # least squares fit of an ellipse using matrix eqn
+
+    J = np.vstack([x**2, x*y, y**2, x, y]).T
+    K = np.ones_like(x)
+    JT = J.transpose()
+    JTJ = np.dot(JT,J)
+    invJTJ = np.linalg.inv(JTJ)
+    vector = np.dot(invJTJ, np.dot(JT,K))
+
+    return np.append(vector, -1)
+
+def convert_to_physical(A, B, C, D, E, F):
+    x0 = (2*C*D - B*E)/(B**2-4*A*C)
+    y0 = (2*A*E - B*D)/(B**2-4*A*C)
+    a = -( np.sqrt(2*(A*E**2 + C*D**2 - B*D*E + (B**2 - 4*A*C)*F)*((A+C)+(np.sqrt((A-C)**2 + B**2)))) )/(B**2-4*A*C)
+    b = -( np.sqrt(2*(A*E**2 + C*D**2 - B*D*E + (B**2 - 4*A*C)*F)*((A+C)-(np.sqrt((A-C)**2 + B**2)))) )/(B**2-4*A*C)
+    theta = np.arctan2(-B, C-A)/2
+    return x0, y0, a, b, theta
+
+
+#print(ellipse_fit(x_dataG, y_dataG))
+
+def JackKnife2D(model, x, y, confidence):
+    JKx, JKy = astats.jackknife_resampling(x), astats.jackknife_resampling(y)
+    n = x.shape[0] 
+    A = np.zeros(len(JKx))
+    B = np.zeros(len(JKx))
+    C = np.zeros(len(JKx))
+    D = np.zeros(len(JKx))
+    E = np.zeros(len(JKx))
+    F = np.zeros(len(JKx))
+
+    for i in range(n):
+        fit = model(JKx[i], JKy[i])
+        A[i] = fit[0]
+        B[i] = fit[1]
+        C[i] = fit[2]
+        D[i] = fit[3]
+        E[i] = fit[4]
+        F[i] = fit[5]
+
+    statA = model(x, y)[0]
+    statB = model(x, y)[1]
+    statC = model(x, y)[2]
+    statD = model(x, y)[3]
+    statE = model(x, y)[4]
+    statF = model(x, y)[5]
+
+    meanA = np.mean(A)
+    meanB = np.mean(B)
+    meanC = np.mean(C)
+    meanD = np.mean(D)
+    meanE = np.mean(E)
+    meanF = np.mean(F)
+
+    biasA = (n-1)*(meanA - statA)
+    biasB = (n-1)*(meanB - statB)
+    biasC = (n-1)*(meanC - statC)
+    biasD = (n-1)*(meanD - statD)
+    biasE = (n-1)*(meanE - statE)
+    biasF = (n-1)*(meanF - statF)
+
+    stdA = np.sqrt((n-1)*np.mean((A - meanA)*(A - meanA), axis=0))
+    stdB = np.sqrt((n-1)*np.mean((B - meanB)*(B - meanB), axis=0))
+    stdC = np.sqrt((n-1)*np.mean((C - meanC)*(C - meanC), axis=0))
+    stdD = np.sqrt((n-1)*np.mean((D - meanD)*(D - meanD), axis=0))
+    stdE = np.sqrt((n-1)*np.mean((E - meanE)*(E - meanE), axis=0))
+    stdF = np.sqrt((n-1)*np.mean((F - meanF)*(F - meanF), axis=0))
+
+    estimateA = statA - biasA
+    estimateB = statB - biasB
+    estimateC = statC - biasC
+    estimateD = statD - biasD
+    estimateE = statE - biasE
+    estimateF = statF - biasF
+
+    z_score = np.sqrt(2.0) * erfinv(confidence)
+
+    conf_intervalA = estimateA + z_score * np.array((-stdA, stdA))
+    conf_intervalB = estimateB + z_score * np.array((-stdB, stdB))
+    conf_intervalC = estimateC + z_score * np.array((-stdC, stdC))
+    conf_intervalD = estimateD + z_score * np.array((-stdD, stdD))
+    conf_intervalE = estimateE + z_score * np.array((-stdE, stdE))
+    conf_intervalF = estimateF + z_score * np.array((-stdF, stdF))
+
+    estimate = np.array([estimateA, estimateB, estimateC, estimateD, estimateE, estimateF])
+
+    
+    return A, B, C, D, E, F
+
+'''
+print(JackKnife2D(ellipse_fit, x_dataG, y_dataG, 0.8))
+
+print(convert_to_physical(ellipse_fit(x_dataG, y_dataG)[0], ellipse_fit(x_dataG, y_dataG)[1], ellipse_fit(x_dataG, y_dataG)[2],
+                          ellipse_fit(x_dataG, y_dataG)[3], ellipse_fit(x_dataG, y_dataG)[4],ellipse_fit(x_dataG, y_dataG)[5]))
+
+print(convert_to_physical(JackKnife2D(ellipse_fit, x_dataG, y_dataG, 0.8)[0], JackKnife2D(ellipse_fit, x_dataG, y_dataG, 0.8)[1],
+                          JackKnife2D(ellipse_fit, x_dataG, y_dataG, 0.8)[2], JackKnife2D(ellipse_fit, x_dataG, y_dataG, 0.8)[3],
+                          JackKnife2D(ellipse_fit, x_dataG, y_dataG, 0.8)[4], JackKnife2D(ellipse_fit, x_dataG, y_dataG, 0.8)[5]))
+'''
+
+'''
+def ellipse_eq(x, y, x0, y0, a, b, theta):
+    term1 = ((x - x0) * np.cos(theta) + (y - y0) * np.sin(theta))**2 / a**2
+    term2 = ((-(x - x0) * np.sin(theta) + (y - y0) * np.cos(theta))**2) / b**2
+    return term1 + term2 - 1  # ellipse is defined by ellipse_eq == 0
+
+# Define the plotting grid.
+
+print(ganymede_x)
+N = 5000
+x_min, x_max = -400, 400  # use names that don't conflict with x0_model, y0_model
+y_min, y_max = -100, 100
+xs = np.linspace(x_min, x_max, N)
+ys = np.linspace(y_min, y_max, N)
+X, Y = np.meshgrid(xs, ys)
+
+# Evaluate the ellipse equation on the grid.
+Z = ellipse_eq(X, Y, x0_model, y0_model, a_model, b_model, theta_model)
+
+# Plot the contour corresponding to the ellipse (where Z == 0).
+
+plt.scatter(ganymede_x, ganymede_y, color='black')
+plt.errorbar(ganymede_x, ganymede_y, xerr = np.ones(len(ganymede_x)), yerr = np.ones(len(ganymede_y)), ls = 'none', color='black')
+plt.contour(X, Y, Z, levels=[0], colors="k")
+plt.xlabel("X")
+plt.ylabel("Y")
+plt.title("Ellipse from MCMC Parameters")
+plt.show()
+'''
+
+
+initial_valuesIx = [200, 1.769, 0]
+initial_valuesEx = [250, 3.551, 0]
+initial_valuesGx = [310, 7.154, 0]
+initial_valuesCx = [500, 16.689, 0]
+
+
 def JackKnife(model, x, confidence_level, Time, initialx):
     JKx, JKP = astats.jackknife_resampling(x), astats.jackknife_resampling(Time)
     n = x.shape[0]
-    t = np.zeros(len(JKx))
+    Radius = np.zeros(len(JKx))
+    Period = np.zeros(len(JKx))
+    Start_angle = np.zeros(len(JKx))
+
     for i in range(n):
         popt, _ = opt.curve_fit(model, JKx[i], JKP[i]/(24*60), sigma = np.ones(len(JKx[i])), 
                                 p0=initialx, absolute_sigma=True, check_finite=True, maxfev=50000)
-        t[i] = popt[0]
+        Radius[i] = popt[0]
+        Period[i] = popt[1]
+        Start_angle[i] = popt[2]
 
-    stat = CurveFit(model, x, initialx, Time)[0][0]
-    mean = np.mean(t)
-    bias = (n-1)*(mean - stat)
-    std = np.sqrt((n-1)*np.mean((t - mean)*(t - mean), axis=0))
-    estimate = stat - bias
+    stat1 = CurveFit(model, x, initialx, Time)[0][0]
+    stat2 = CurveFit(model, x, initialx, Time)[0][1]
+    stat3 = CurveFit(model, x, initialx, Time)[0][2]
+
+    mean1 = np.mean(Radius)
+    mean2 = np.mean(Period)
+    mean3 = np.mean(Start_angle)
+
+    bias1 = (n-1)*(mean1 - stat1)
+    bias2 = (n-1)*(mean2 - stat2)
+    bias3 = (n-1)*(mean3 - stat3)
+
+    std1 = np.sqrt((n-1)*np.mean((Radius - mean1)*(Radius - mean1), axis=0))
+    std2 = np.sqrt((n-1)*np.mean((Period - mean2)*(Period - mean2), axis=0))
+    std3 = np.sqrt((n-1)*np.mean((Start_angle - mean2)*(Start_angle - mean2), axis=0))
+
+    estimate1 = stat1 - bias1
+    estimate2 = stat2 - bias2
+    estimate3 = stat3 - bias3
+
     z_score = np.sqrt(2.0) * erfinv(confidence_level)
-    conf_interval = estimate + z_score * np.array((-std, std))
-    
-    return estimate, mean, bias, std, conf_interval
+
+    conf_interval1 = estimate1 + z_score * np.array((-std1, std1))
+    conf_interval2 = estimate2 + z_score * np.array((-std2, std2))
+    conf_interval3 = estimate2 + z_score * np.array((-std3, std3))
+
+    estimate = np.array([estimate1, estimate2, estimate3])
 
 
-print('Io Jackknife', JackKnife(modelI, x_dataI, 0.8, Time_minsI, initial_valuesIx), '\n')
-print('Europa Jackknife:', JackKnife(modelE, x_dataE, 0.8, Time_minsE, initial_valuesEx), '\n')
-print('Ganymede Jackknife:', JackKnife(modelG, x_dataG, 0.8, Time_minsG, initial_valuesGx), '\n')
-print('Callisto Jackknife:', JackKnife(modelC, x_dataC, 0.8, Time_minsC, initial_valuesCx), '\n')
+
+    return estimate
+
+'''
+print(CurveFit(model, x_dataI, initial_valuesIx, Time_minsI)[0])
+print(JackKnife(model, x_dataI, 0.8, Time_minsI, initial_valuesIx))
+
+print(CurveFit(model, x_dataE, initial_valuesEx, Time_minsE)[0])
+print(JackKnife(model, x_dataE, 0.8, Time_minsE, initial_valuesEx))
+
+print(CurveFit(model, x_dataG, initial_valuesGx, Time_minsG)[0])
+print(JackKnife(model, x_dataG, 0.8, Time_minsG, initial_valuesGx))
+
+print(CurveFit(model, x_dataC, initial_valuesCx, Time_minsC)[0])
+print(JackKnife(model, x_dataC, 0.8, Time_minsC, initial_valuesCx))
+'''
+#print(x_dataG)
+
+plt.figure(figsize=(6, 6))
+plt.errorbar(Time_minsG/(24*60), x_dataG, yerr=0.5, marker='o', label='Data', ls='none')
+plt.plot(smooth_time(Time_minsG), model(smooth_time(Time_minsG), *JackKnife(model, x_dataG, 0.8, Time_minsG, initial_valuesGx)), label='Fit')
+plt.title('Ganymede')
+plt.xlabel('Time (days)')
+plt.ylabel('Arcsec')
+plt.legend()
+plt.show()
+
+
+
+#print('Io Jackknife', JackKnife(modelI, x_dataI, 0.8, Time_minsI, initial_valuesIx), '\n')
+#print('Europa Jackknife:', JackKnife(modelE, x_dataE, 0.8, Time_minsE, initial_valuesEx), '\n')
+#print('Ganymede Jackknife:', JackKnife(modelG, x_dataG, 0.8, Time_minsG, initial_valuesGx), '\n')
+#print('Callisto Jackknife:', JackKnife(modelC, x_dataC, 0.8, Time_minsC, initial_valuesCx), '\n')
  
+
 
 
 
@@ -618,5 +838,4 @@ print(Shuffle(x_data, y_data, len(x_data)))
 #t = scipy.stats.bootstrap(datas, opt.curve_fit(model,Time_mins/(24*60), x_data, sigma = 10000, absolute_sigma=True, p0=initial_valuesx, check_finite=True, maxfev=50000), n_resamples=9999, batch=None, vectorized=None, paired=False, 
 #                          axis=0, confidence_level=0.95, alternative='two-sided', method='BCa', bootstrap_result=None)
 #print(t)
-
 
